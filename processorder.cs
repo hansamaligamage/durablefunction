@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 
 namespace durablefunc
@@ -11,8 +11,7 @@ namespace durablefunc
     public static class processorder
     {
         [FunctionName("processorder_HttpStart")]
-        public static async Task<HttpResponseMessage> HttpStart([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")]HttpRequestMessage req,
-            [OrchestrationClient]DurableOrchestrationClient starter, ILogger log)
+        public static async Task<HttpResponseMessage> HttpStart([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")]HttpRequestMessage req, [DurableClient] IDurableOrchestrationClient starter, ILogger log)
         {
             string instanceId = await starter.StartNewAsync("processorder", null);
 
@@ -22,7 +21,7 @@ namespace durablefunc
         }
 
         [FunctionName("processorder")]
-        public static async Task<List<string>> RunOrchestrator([OrchestrationTrigger] DurableOrchestrationContext context)
+        public static async Task<List<string>> RunOrchestrator([OrchestrationTrigger] IDurableOrchestrationContext context)
         {
             var outputs = new List<string>();
 
