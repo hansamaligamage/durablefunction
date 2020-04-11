@@ -21,7 +21,7 @@ public static async Task<HttpResponseMessage> HttpStart(
  }
 ```
 
-### Orchestrator function to call the activity function in a specific order
+### Orchestrator function to call the activity functions in a specific order
 ```
 [FunctionName("processorder")]
 public static async Task<List<string>> RunOrchestrator(
@@ -37,3 +37,35 @@ public static async Task<List<string>> RunOrchestrator(
     return outputs;
   }
   ```
+  
+  ### Activity functions
+  ```
+  [FunctionName("CheckProductAvailability")]
+  public static string ProductAvailability([ActivityTrigger] string productList, ILogger log)
+  {
+      log.LogInformation($"Product List - {productList}.");
+      return $"Product List -  {productList}!";
+  }
+
+  [FunctionName("CreateInvoice")]
+  public static string CreateInvoice([ActivityTrigger] bool productAvailable, ILogger log)
+  {
+      if(productAvailable)
+      {
+          log.LogInformation("Products are available");
+          return "Products are available";
+      }
+      else
+      {
+          log.LogInformation("Products are not available");
+          return "Products are not available";
+       }
+   }
+
+   [FunctionName("ShipProducts")]
+   public static string ShipProducts([ActivityTrigger] double totalAmount, ILogger log)
+   {
+        log.LogInformation($"Invoice Amount {totalAmount}.");
+        return $"Invoice Amount {totalAmount}.";
+    }
+```
