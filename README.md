@@ -20,3 +20,20 @@ public static async Task<HttpResponseMessage> HttpStart(
     return starter.CreateCheckStatusResponse(req, instanceId);
  }
 ```
+
+### Orchestrator function to call the activity function in a specific order
+```
+[FunctionName("processorder")]
+public static async Task<List<string>> RunOrchestrator(
+  [OrchestrationTrigger] IDurableOrchestrationContext context)
+{
+    var outputs = new List<string>();
+
+    outputs.Add(await context.CallActivityAsync<string>("CheckProductAvailability", 
+                                                        "Mi Band 4, Optical Mouse - red"));
+    outputs.Add(await context.CallActivityAsync<string>("CreateInvoice", true));
+    outputs.Add(await context.CallActivityAsync<string>("ShipProducts", 10000));
+
+    return outputs;
+  }
+  ```
