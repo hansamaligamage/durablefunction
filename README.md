@@ -5,3 +5,18 @@ In the sample appication, it has a orchestrator function and calls three activit
 
 ## Installed Packages
 Microsoft.NET.Sdk.Functions version 3 (3.0.5) and Microsoft.Azure.WebJobs.Extensions.DurableTask 2 (2.2.0) 
+
+## Code snippets
+### Http trigger function
+This is a http trigger function and the entry point for the application
+```
+[FunctionName("processorder_HttpStart")]
+public static async Task<HttpResponseMessage> HttpStart(
+  [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")]HttpRequestMessage req, 
+  [DurableClient] IDurableOrchestrationClient starter, ILogger log)
+{
+    string instanceId = await starter.StartNewAsync("processorder", null);
+    log.LogInformation($"Started orchestration with ID = '{instanceId}'.");
+    return starter.CreateCheckStatusResponse(req, instanceId);
+ }
+```
